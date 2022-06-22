@@ -6,6 +6,7 @@ import os
 
 #___________________________________________________________________________________________________________________
 def get_sales_df(use_cache=True):
+    #use local cache from CSV if available
     filename = "sales_df.csv"
     if os.path.isfile(filename) and use_cache:
         return pd.read_csv(filename)
@@ -51,6 +52,7 @@ def get_sales_df(use_cache=True):
 
 #___________________________________________________________________________________________________________________
 def get_items_df(use_cache=True):
+    #use local cache from CSV if available
     filename = "items_df.csv"
     if os.path.isfile(filename) and use_cache:
         return pd.read_csv(filename)
@@ -97,6 +99,7 @@ def get_items_df(use_cache=True):
 #___________________________________________________________________________________________________________________
 
 def get_stores_df(use_cache=True):
+    #use local cache from CSV if available
     filename = 'stores_df.csv'
     if os.path.isfile(filename) and use_cache:
         return pd.read_csv(filename)
@@ -138,11 +141,15 @@ def get_stores_df(use_cache=True):
 #___________________________________________________________________________________________________________________
 
 def get_combined_df(use_cache=True):
+    #use local cache from CSV if available
     filename = 'combined_df.csv'
     if os.path.isfile(filename) and use_cache:
         return pd.read_csv(filename)
     else:
-        combined_df = sales_df.merge(items_df, left_on='item', right_on='item_id', copy=False)
-        combined_df = combined_df.merge(stores_df, left_on='store', right_on='store_id', copy=False)
+        sales_df = get_sales_df()
+        items_df = get_items_df()
+        stores_df = get_stores_df()
+        combined_df = items_df.merge(sales_df, left_on='item_id', right_on='item', how='left', copy=False)
+        combined_df = combined_df.merge(stores_df, left_on='store', right_on='store_id', how='left', copy=False)
         combined_df.to_csv(filename, index=False)
         return combined_df
