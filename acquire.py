@@ -2,121 +2,147 @@
 
 import pandas as pd
 import requests
+import os
 
 #___________________________________________________________________________________________________________________
-def get_sales_df():
+def get_sales_df(use_cache=True):
+    filename = "sales_df.csv"
+    if os.path.isfile(filename) and use_cache:
+        return pd.read_csv(filename)
+    else:
+        #create empty list to store the pages
+        sales = []
 
-    #create empty list to store the pages
-    sales = []
+        #set the domain an endpoint
+        domain = 'https://python.zgulde.net'
+        endpoint = '/api/v1/sales'
 
-    #set the domain an endpoint
-    domain = 'https://python.zgulde.net'
-    endpoint = '/api/v1/sales'
-
-    # the url is the combination of domain and endpoint
-    url = domain + endpoint
-
-    #set the function parameters
-    response = requests.get(url)
-    data = response.json()
-
-    # define the pages in the api
-    current_page = data['payload']['page']
-    next_page = data['payload']['next_page']
-    max_page = data['payload']['max_page']
-
-    # write a loop to run through 1: max page range
-    for page in range (1, (max_page)):
-
-        url_endpoint = data['payload']['next_page'] #use next page
-        url = domain + url_endpoint
-
-        # update the response to use the api next page to progress the script
-        response = requests.get(url)
-        data = response.json()
-
-        # update the complete_sales_df to include the additional list items
-        sales.extend(data['payload']['sales'])
-
-        # check page progress with print statement
-        print(f'\rFetching page {page} of {max_page} {url}', end='')
-
-    # return the full dataframe
-    return pd.DataFrame(sales)
-
-#___________________________________________________________________________________________________________________
-def get_items_df():
-
-    #create empty list to store the pages
-    items = []
-
-    #set the domain an endpoint
-    domain = 'https://python.zgulde.net'
-    endpoint = '/api/v1/items'
-
-    # the url is the combination of domain and endpoint
-    url = domain + endpoint
-
-    #set the function parameters
-    response = requests.get(url)
-    data = response.json()
-
-    # define the pages in the api
-    current_page = data['payload']['page']
-    next_page = data['payload']['next_page']
-    max_page = data['payload']['max_page']
-
-    # write a loop to run through 1: max page range
-    for page in range (1, (max_page)):
-
-        endpoint = data['payload']['next_page'] #use next page
+        # the url is the combination of domain and endpoint
         url = domain + endpoint
 
-        # update the response to use the api next page to progress the script
+        #set the function parameters
         response = requests.get(url)
         data = response.json()
 
-        # update the complete_sales_df to include a concat of the additional dataframe
-        items.extend(data['payload']['items'])
+        # define the pages in the api
+        current_page = data['payload']['page']
+        next_page = data['payload']['next_page']
+        max_page = data['payload']['max_page']
 
-        # check page progress with print statement
-        print(f'\rFetching page {page} of {max_page} {url}', end='')
+        # write a loop to run through 1: max page range
+        for page in range (1, (max_page)):
 
-    # return the full dataframe
-    return pd.DataFrame(items)
+            url_endpoint = data['payload']['next_page'] #use next page
+            url = domain + url_endpoint
+
+            # update the response to use the api next page to progress the script
+            response = requests.get(url)
+            data = response.json()
+
+            # update the complete_sales_df to include the additional list items
+            sales.extend(data['payload']['sales'])
+
+            # check page progress with print statement
+            print(f'\rFetching page {page} of {max_page} {url}', end='')
+        sales = pd.DataFrame(sales)
+        sales.to_csv(filename, index=False)
+        # return the full dataframe
+        return sales
+
+#___________________________________________________________________________________________________________________
+def get_items_df(use_cache=True):
+    filename = "items_df.csv"
+    if os.path.isfile(filename) and use_cache:
+        return pd.read_csv(filename)
+    else:
+    #create empty list to store the pages
+        items = []
+
+        #set the domain an endpoint
+        domain = 'https://python.zgulde.net'
+        endpoint = '/api/v1/items'
+
+        # the url is the combination of domain and endpoint
+        url = domain + endpoint
+
+        #set the function parameters
+        response = requests.get(url)
+        data = response.json()
+
+        # define the pages in the api
+        current_page = data['payload']['page']
+        next_page = data['payload']['next_page']
+        max_page = data['payload']['max_page']
+
+        # write a loop to run through 1: max page range
+        for page in range (1, (max_page)):
+
+            endpoint = data['payload']['next_page'] #use next page
+            url = domain + endpoint
+
+            # update the response to use the api next page to progress the script
+            response = requests.get(url)
+            data = response.json()
+
+            # update the complete_sales_df to include a concat of the additional dataframe
+            items.extend(data['payload']['items'])
+
+            # check page progress with print statement
+            print(f'\rFetching page {page} of {max_page} {url}', end='')
+        items = pd.DataFrame(items)
+        items.to_csv(filename, index=False)
+        # return the full dataframe
+        return items
 
 #___________________________________________________________________________________________________________________
 
-def get_stores_df():
+def get_stores_df(use_cache=True):
+    filename = 'stores_df.csv'
+    if os.path.isfile(filename) and use_cache:
+        return pd.read_csv(filename)
+    else:
 
-    #create empty list to store the pages
-    stores = []
+        #create empty list to store the pages
+        stores = []
 
-    #set the domain an endpoint
-    domain = 'https://python.zgulde.net'
-    endpoint = '/api/v1/stores'
+        #set the domain an endpoint
+        domain = 'https://python.zgulde.net'
+        endpoint = '/api/v1/stores'
 
-    # the url is the combination of domain and endpoint
-    url = domain + endpoint
+        # the url is the combination of domain and endpoint
+        url = domain + endpoint
 
-    #set the function parameters
-    response = requests.get(url)
-    data = response.json()
+        #set the function parameters
+        response = requests.get(url)
+        data = response.json()
 
-    # define the pages in the api
-    current_page = data['payload']['page']
-    next_page = data['payload']['next_page']
-    max_page = data['payload']['max_page']
-    print(max_page)
+        # define the pages in the api
+        current_page = data['payload']['page']
+        next_page = data['payload']['next_page']
+        max_page = data['payload']['max_page']
+        print(max_page)
 
-    # set URL:
-    url = domain + endpoint
+        # set URL:
+        url = domain + endpoint
 
-    # update the complete_sales_df to include a concat of the additional dataframe
-    stores.extend(data['payload']['stores'])
+        # update the complete_sales_df to include a concat of the additional dataframe
+        stores.extend(data['payload']['stores'])
 
-    # check page progress with print statement
-    print(f'\rFetching page {current_page} of {max_page} {url}', end='')
+        # check page progress with print statement
+        print(f'\rFetching page {current_page} of {max_page} {url}', end='')
+        stores = pd.DataFrame(stores)
+        stores.to_csv(filename, index=False)
+        # return the full dataframe
+        return stores
 
-    # return the full dataframe
-    return pd.DataFrame(stores)
+#___________________________________________________________________________________________________________________
+
+def get_combined_df(use_cache=True):
+    filename = 'combined_df.csv'
+    if os.path.isfile(filename) and use_cache:
+        return pd.read_csv(filename)
+    else:
+        combined_df = sales_df.merge(items_df, left_on='item', right_on='item_id', copy=False)
+        combined_df = combined_df.merge(stores_df, left_on='store', right_on='store_id', copy=False)
+        combined_df.to_csv(filename, index=False)
+        return combined_df
